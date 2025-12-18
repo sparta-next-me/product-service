@@ -53,6 +53,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/health", "/public/**").permitAll()
                         .requestMatchers("/actuator/prometheus", "/actuator/health").permitAll().anyRequest().authenticated()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/api-docs.html"
+                        ).permitAll()
                 )
                 .addFilterBefore(gatewayUserHeaderAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class)
