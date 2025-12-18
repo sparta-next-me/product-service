@@ -1,10 +1,13 @@
 package org.nextme.product_service.product.presentation;
 
 import lombok.RequiredArgsConstructor;
+import org.nextme.common.security.UserPrincipal;
 import org.nextme.product_service.product.application.service.ProductService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -25,10 +28,13 @@ public class ProductController {
 
     // 1. C (Create) : 새 상품 등록
     // POST /api/v1/products
+    @PreAuthorize("hasRole('ADVISOR')")
     @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest request) {
-        //
-        ProductResponse response = productService.createProduct(SAMPLE_ADVISOR_ID, request);
+    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest request,
+        @AuthenticationPrincipal UserPrincipal principal)
+    {
+        UUID userId = UUID.fromString(principal.userId());
+        ProductResponse response = productService.createProduct(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response); // HTTP 201 Created
     }
 
